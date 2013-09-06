@@ -1,0 +1,8 @@
+#! /usr/local/bin/ruby
+require 'xyml/xyml'
+
+from=ARGV[0]
+to=ARGV[1]
+xyml=Xyml::Document.new
+xyml.load_XML(File.open(from))
+xyml.out_YAML(File.open(to,'w')) 

@@ -1,0 +1,17 @@
+#! /usr/local/bin/ruby
+require 'xyml/xyml'
+
+from=ARGV[0]
+to=ARGV[1]
+indent=nil
+if ARGV[2]
+  indent=ARGV[2]
+end
+
+xyml=Xyml::Document.new
+xyml.load_YAML(File.open(from))
+if indent then
+  xyml.out_XML(File.open(to,'w'),indent)
+else
+  xyml.out_XML(File.open(to,'w'))
+end

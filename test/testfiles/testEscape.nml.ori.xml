@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<quiz>
+<group1>
+<e>-</e>
+<e>?a</e>
+<e>aa?</e>
+<e>?</e>
+<e>a:</e>
+<e>:a</e>
+<e>:</e>
+<e>a:a</e>
+<e>a:a:</e>
+<e>a,</e>
+<e>a[</e>
+<e>a]</e>
+<e>[]</e>
+<e>[</e>
+<e>]</e>
+<e>a{</e>
+<e>a}</e>
+<e>{}</e>
+<e>{</e>
+<e>}</e>
+<e>@</e>
+<e>#</e>
+<e>a &amp;</e>
+<e>!</e>
+<e>&lt;</e>
+<e>&gt;</e>
+<e>&apos;</e>
+<e>&quot;&apos;&quot;</e>
+<e>&quot;&quot;</e>
+<e>&apos;&quot;&apos;</e>
+<e>\</e>
+<e>\:</e>
+<e>&quot;aa\&quot;aa&quot;</e>
+<e>&quot;\&quot;&quot;</e>
+<e>%</e>
+<e>`</e>
+<e>&amp;</e>
+</group1>
+<group2>
+<e a00=''/>
+<e a01='-'/>
+<e a02='?'/>
+<e a03=','/>
+<e a04='['/>
+<e a05=']'/>
+<e a06='{'/>
+<e a07='}'/>
+<e a08='@'/>
+<e a09='before#after'/>
+<e a10='&amp;'/>
+<e a11='!'/>
+<e a12='&lt;'/>
+<e a13='&gt;'/>
+<e a14='&quot;'/>
+<e a15='&apos;'/>
+<e a16='&quot;&apos;&quot;'/>
+<e a17='&quot;&quot;'/>
+<e a18='&apos;&quot;&apos;'/>
+<e a19='\'/>
+<e a20='\:'/>
+<e a21='&quot;aa\&quot;aa&quot;'/>
+<e a22='&quot;\&quot;&quot;'/>
+<e a23='%'/>
+<e a24='`'/>
+<e a25='
+'/>
+<e a26='
+	a'/>
+<e a27='	'/>
+<e a28='	a	'/>
+<e a29='\t'/>
+<e a30='\n'/>
+</group2>
+</quiz>

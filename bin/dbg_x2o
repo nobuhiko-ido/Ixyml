@@ -1,0 +1,8 @@
+#! /usr/local/bin/ruby
+require 'xyml/xyml'
+
+from=ARGV[0]
+xml_text=File.open(from).read
+doc = REXML::Document.new xml_text
+Xyml.dbg_dom_print_rcsv doc.root,0
+doc.write(STDOUT,2)

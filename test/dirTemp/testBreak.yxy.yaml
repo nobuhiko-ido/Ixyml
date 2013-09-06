@@ -1,0 +1,7 @@
+---
+- quiz:
+  - group1:
+    - text:
+      - "abcd\nefghi\njkl\n"
+    - text2:
+      - xyz

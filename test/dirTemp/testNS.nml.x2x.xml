@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<quiz xmlns:hnd=''>
+  <hnd:group1>
+    <hnd:text1>
+      abcdefg
+      hijklmnopq
+      rstuvwxyz
+    </hnd:text1>
+    <hnd:text2>
+abcdefg
+hijklmnopq
+rstuvwxyz
+    </hnd:text2>
+  </hnd:group1>
+  <hnd:group2>
+      <hnd:text1>
+      abcdefg
+      hijklmnopq
+      </hnd:text1>
+  </hnd:group2>
+</quiz>

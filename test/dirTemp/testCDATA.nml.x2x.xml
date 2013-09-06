@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<quiz>
+  <group1>
+    <text1>
+      abcdefg
+      hijklmnopq
+      rstuvwxyz
+    </text1>
+
+あああ
+
+
+
+    <text2>
+abcdefg
+hijklmnopq
+rstuvwxyz
+    </text2>
+  </group1>
+  <group2>
+      <text1>
+      abcdefg
+      hijklmnopq
+      </text1>
+  </group2>
+</quiz>

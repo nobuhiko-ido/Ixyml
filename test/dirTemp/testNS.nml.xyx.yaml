@@ -1,0 +1,19 @@
+---
+- quiz:
+  - xmlns:hnd: 
+  - "\n  "
+  - hnd:group1:
+    - "\n    "
+    - hnd:text1:
+      - "\n      abcdefg\n      hijklmnopq\n      rstuvwxyz\n    "
+    - "\n    "
+    - hnd:text2:
+      - "\nabcdefg\nhijklmnopq\nrstuvwxyz\n    "
+    - "\n  "
+  - "\n  "
+  - hnd:group2:
+    - "\n      "
+    - hnd:text1:
+      - "\n      abcdefg\n      hijklmnopq\n      "
+    - "\n  "
+  - "\n"

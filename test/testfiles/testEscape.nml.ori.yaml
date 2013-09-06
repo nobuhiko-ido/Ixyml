@@ -1,0 +1,105 @@
+---
+- quiz:
+  - group1:
+    - text:
+      - "abc: deedfadsfads"
+#     - -   failure
+    - text:
+      - -a
+    - text:
+      - ?a
+    - text:
+      - aa?
+#   - text:
+#     - ?
+#    - text:
+#      - a:    'a' regarded as an attribute name
+#    - text:
+#      - :a    ':a' regarded as 'a'
+#    - text:
+#      - a:a:   a:a regarded as an attribute name.
+#     - a: a:  error
+#   - text:
+#     - ,a   error
+    - text:
+      - a,
+    - text:
+      - a[
+    - text:
+#     - [a   error
+      - a]
+    - text:
+#     - {a   error
+      - a}
+#     - @a   error
+    - text:
+      - a@
+#   - text:
+#     - #asdfdas    no effection
+    - text:
+      - before1#after1
+#    - text:
+#      - before2 #after2
+# '#after2' regarded as a comment
+#     - a&   failure
+#     - *a   error
+#     - &a   error
+    - test:
+      - a &
+    - text:
+      - a !
+#      -!a
+#      - !
+# no effection
+#     - |a   error
+    - text:
+      - a <
+    - text:
+      - a >
+#     - >a   error
+    - test:
+      - a '
+    - test:
+      - "'"
+#     - 'a   error
+#     - "\'"   &apos in xml
+#    - text:
+#      - "''"   &apos
+#    - text:
+#      - a'
+#   - text:
+#     - ''a
+##     - ''
+    - test:
+      - "aa\"aa"
+    - test:
+      - "\""
+#    - test:
+#      - a"  failure
+    - text:
+      - a%
+#     - %a   error
+#     - @a
+    - text:
+      - a`
+#     - `a   error
+    - text3:
+      - a00: attribute
+      - a01: 
+#     - a02: -
+      - a02: a-
+      - a03: ?a
+      - a04: aa?
+#     - a05: ?
+#     - a06: a:
+#     - a07: :a   not ":a" but "a"
+#     - a08: a: a:  error
+#     - a09: ,a   error
+      - a10: a,
+      - a11: a[
+#     - a12: [a   error
+      - a13: a]
+#     - a14: {a   error
+      - a15: a}
+#     - a16: @a   error
+#     - a17: #

@@ -1,0 +1,53 @@
+---
+- quiz:
+  - group1:
+    - text:
+      - "abc: deedfadsfads"
+    - text:
+      - -a
+    - text:
+      - ?a
+    - text:
+      - aa?
+    - text:
+      - a,
+    - text:
+      - a[
+    - text:
+      - a]
+    - text:
+      - a}
+    - text:
+      - a@
+    - text:
+      - before1#after1
+    - test:
+      - a &
+    - text:
+      - a !
+    - text:
+      - a <
+    - text:
+      - a >
+    - test:
+      - a '
+    - test:
+      - "'"
+    - test:
+      - "aa\"aa"
+    - test:
+      - "\""
+    - text:
+      - a%
+    - text:
+      - a`
+    - text3:
+      - a00: attribute
+      - a01: 
+      - a02: a-
+      - a03: ?a
+      - a04: aa?
+      - a10: a,
+      - a11: a[
+      - a13: a]
+      - a15: a}

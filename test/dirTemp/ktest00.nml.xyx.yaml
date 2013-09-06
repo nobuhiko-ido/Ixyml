@@ -1,0 +1,134 @@
+---
+- quiz:
+  - "\n"
+  - quizUnit:
+    - "\n"
+    - unitText:
+      - format: html
+      - 次の
+      - u:
+        - 下線部
+      - の読み仮名を漢字に直せ。
+    - "\n"
+    - info2:
+      - id: info2a
+      - type: defaultNumberOfLetters
+      - 3
+    - "\n"
+    - info:
+      - type: defaultAllotment
+      - "\n"
+      - noChild:
+        - 
+      - "\n"
+      - noChild2:
+        - 
+      - "\n3"
+    - "\n"
+    - question:
+      - type: handWriting
+      - "\n"
+      - questionText:
+        - format: html
+        - 古く、
+        - u:
+          - ばいえん
+        - でまっ黒にすすけた煉瓦壁の陰に汽車が停まると、
+      - "\n"
+      - info:
+        - type: numberOfLetters
+        - 2
+      - "\n"
+      - answer:
+        - fraction: 100
+        - "\n"
+        - text:
+          - 煤煙
+        - "\n"
+      - "\n"
+      - answer:
+        - fraction: 0
+        - "\n"
+        - text:
+          - 梅園
+        - "\n"
+        - feedback:
+          - "\n"
+          - text:
+            - これは”ばいえん”違いですね。
+          - "\n"
+        - "\n"
+      - "\n"
+      - source:
+        - "\n"
+        - author:
+          - 有島武郎
+        - "\n"
+        - title:
+          - 或る女（前編）
+        - "\n"
+        - link:
+          - "\n"
+          - label:
+            - 青空文庫
+          - "\n"
+          - url:
+            - http://www.aozora.gr.jp/
+          - "\n"
+        - "\n"
+      - "\n"
+    - "\n"
+    - question:
+      - type: handWriting
+      - "\n"
+      - questionText:
+        - format: html
+        - 2古く
+        - u:
+          - ばいえん
+        - でまっ黒にすすけた煉瓦壁の陰に汽車が停まると、
+      - "\n"
+      - info:
+        - type: numberOfLetters
+        - 2
+      - "\n"
+      - answer:
+        - fraction: 100
+        - "\n"
+        - text:
+          - 2煤煙
+        - "\n"
+      - "\n"
+      - answer:
+        - fraction: 0
+        - "\n"
+        - text:
+          - 2梅園
+        - "\n"
+        - feedback:
+          - "\n"
+          - text:
+            - 2これは”ばいえん”違いですね。
+          - "\n"
+        - "\n"
+      - "\n"
+      - source:
+        - "\n"
+        - author:
+          - 2有島武郎
+        - "\n"
+        - title:
+          - 2或る女（前編）
+        - "\n"
+        - link:
+          - "\n"
+          - label:
+            - 2青空文庫
+          - "\n"
+          - url:
+            - 2http://www.aozora.gr.jp/
+          - "\n"
+        - "\n"
+      - "\n"
+    - "\n"
+  - "\n"
