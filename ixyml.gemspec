@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
 Xyml_element module provides XYML element API methods. These API methods can be used to elements in Xyml::Document.}
   gem.summary       = %q{XYML file accessors and XYML element accessors.}
 
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/nobuhiko-ido/Ixyml"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
