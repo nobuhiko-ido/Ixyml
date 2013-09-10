@@ -7,14 +7,14 @@ class TestDocument < Test::Unit::TestCase
   fileDir="test/testfiles/"
     
   should ". Xyml_node has same values as correspoinding raw hash and array have." do
-    nodeQT=Xyml.element_new(:questionText)
+    nodeQT=Xyml::Element.new(:questionText)
     #pp nodeQT
     nodeQT.st("textQT")
     nodeQT.sa(:type,"instruction")
     #print "#D#test_xyml_element.rb:nodeQT=";pp nodeQT
     assert_equal(nodeQT[:questionText][1],"textQT")
     assert_equal(nodeQT.gt,"textQT")
-    nodeQ=Xyml.element_new(:question)
+    nodeQ=Xyml::Element.new(:question)
     nodeQ.ac(nodeQT)
     assert_equal(nodeQ.gcn(:questionText)[0].gt,"textQT")
     nodeQ.sa(:type,'handWriting')
@@ -25,7 +25,7 @@ class TestDocument < Test::Unit::TestCase
     nodeQ.sa(:type,'handWritingChanged')
     assert_equal('handWritingChanged',nodeQ.ga(:type))
     #print "#D#test_xyml_element.rb:Xyml_node:nodeQ=";pp nodeQ
-    nodeQT2=Xyml.element_new(:questionText)
+    nodeQT2=Xyml::Element.new(:questionText)
     nodeQT2.st("textQT2")
     nodeQT2.sa(:type,"choices");
     nodeQ.ac(nodeQT2)
@@ -70,8 +70,8 @@ class TestDocument < Test::Unit::TestCase
   should ". Created xyml_node can be saved as a xyml file." do
     doc=Xyml::Document.new :quiz
     doc.root.sa(:type,'handWriting')
-    elementQuestions=Xyml.element_new(:questions)
-    elementQuestion=Xyml.element_new(:question)
+    elementQuestions=Xyml::Element.new(:questions)
+    elementQuestion=Xyml::Element.new(:question)
     elementQuestion.st('who are your?');
     doc.root.ac(elementQuestions)
     elementQuestions.ac(elementQuestion)
@@ -90,8 +90,8 @@ class TestDocument < Test::Unit::TestCase
   should ". Created xyml_node can be saved as a xml file." do
     doc=Xyml::Document.new :quiz
     doc.root.sa(:type,'handWriting')
-    elementQuestions=Xyml.element_new(:questions)
-    elementQuestion=Xyml.element_new(:question)
+    elementQuestions=Xyml::Element.new(:questions)
+    elementQuestion=Xyml::Element.new(:question)
     elementQuestion.st('who are your?');
     doc.root.ac(elementQuestions)
     elementQuestions.ac(elementQuestion)
@@ -167,6 +167,8 @@ class TestDocument < Test::Unit::TestCase
     my_element.ac({j:[{e:'kkk'}]})
     assert_equal(:j,my_element.gcf.name)
     assert_equal('kkk',my_element.gcf.ga(:e))
+    my_element.st(my_element.gt)
+    assert_equal('text',my_element[:d][2])
     # isp(insert an element as a previous sibling element)
     xyml_tree=Xyml::Document.new({a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},'text']},{h:[{e:'fff'}]}]})
     my_element=xyml_tree.root.gcfna 'd','e','ggg'
@@ -184,8 +186,10 @@ class TestDocument < Test::Unit::TestCase
     assert_equal('ccc',xyml_tree.root.ga(:b))
     # sa(set value to the attribute with the designated attribute name)
     xyml_tree=Xyml::Document.new({a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},'text']},{h:[{e:'fff'}]}]})
-    xyml_tree.root.sa(:b,'lll')
-    assert_equal('lll',xyml_tree.root.ga(:b))
+    my_element=xyml_tree.root.gcfna 'd','e','ggg'
+    my_element.sa(:e,'lll').sa(:m,'nnn')
+    assert_equal('lll',my_element.ga(:e))
+    assert_equal('nnn',my_element.ga(:m))
     # da(delete attribute)
     xyml_tree=Xyml::Document.new({a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},'text']},{h:[{e:'fff'}]}]})
     xyml_tree.root.da(:b)
@@ -202,6 +206,9 @@ class TestDocument < Test::Unit::TestCase
     my_element=xyml_tree.root.gcfna 'd','e','ggg'
     my_element.st('abc')
     assert_equal('abc',my_element.gt)
+    my_element.st(nil)
+    assert_equal('',my_element.gt)
+    
     # at(add text)
     xyml_tree=Xyml::Document.new({a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},'text']},{h:[{e:'fff'}]}]})
     my_element=xyml_tree.root.gcfna 'd','e','ggg'
@@ -214,7 +221,7 @@ class TestDocument < Test::Unit::TestCase
     assert_equal(nil,xyml_tree.root.gp)
     # gr(get the root element)
     xyml_tree=Xyml::Document.new({a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},'text']},{h:[{e:'fff'}]}]})
-    new_element=Xyml::element_new(:j)
+    new_element=Xyml::Element.new(:j)
     xyml_tree.root.gcfna('d','e','ggg').ac new_element
     assert_equal(:a,new_element.gr.name)
     # is_root?

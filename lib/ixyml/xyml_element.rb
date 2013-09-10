@@ -1,6 +1,6 @@
 #
-# Xyml_element module is for handling a XYML tree data loaded from a XYML format file. See Xyml module
-# for detailed information of XYML.
+# Xyml_element module is for handling a XYML tree data loaded from a XYML format file. 
+# (See Xyml module for detailed information of XYML.)
 #
 # Xyml_elementモジュールは、XYML形式のファイルをロードして得たXYMLツリー構造データを
 # 操作するためのモジュールである。XYML形式については、Xymlモジュールのドキュメントを参照してください。
@@ -9,13 +9,13 @@
 # == (1) data model
 #
 # In the APIs provided by this module, only "elements" in XYML tree data are treated as objects.
-# and their attribures, related elements such as child elements and texts can be accessed via
+# Their attribures, related elements such as child elements and texts can be accessed via
 # APIs of the elements.
 #
 # == (1)データモデル
 #
-# 本モジュールが提供するAPIでは、XYMLツリー構造データのエレメントのみオブジェクトとして扱い、
-# その属性や子エレメントなどの関連エレメント、テキストへのアクセス手段がエレメントのAPIとして提供される。
+# 本モジュールが提供するAPIでは、XYMLツリー構造データのエレメントのみオブジェクトとして扱われる。
+# その属性や子エレメントなどの関連エレメント、テキストへのアクセス手段が、エレメントのAPIとして提供される。
 # 
 #                           +-- element --------------------+
 #                           |                               |
@@ -35,33 +35,48 @@
 #   ------------------------+---->|                     |   |
 #                           |     +---------------------+   |
 #                           +-------------------------------+
-#   (*) data designating the parent element is attached when XYML tree data is constructed(e.g. file load).
+#   (*) data designating the parent element is attached when XYML tree data is constructed(e.g. when file loaded).
 #
-# == (2) preparations
+# == (2) Xyml::Element class
 #
 # In XYML tree data, an element corresponds to a hash which has only one pair of key and value,
-# where the key stands for the element name and the value is an array of
+# where the key stands for the element name and the value is an array of attributes,
 # child elements and texts. Note the key must be a symbol.
 #
-# After a hash representing an element extends this module, we can use the APIs in this module as
-# interfaces to the element. If you load XYML tree data from a file by using the methods in Xyml module, 
-# such extensions have already been done.
+# Xyml::Element class inherits Hash, includes this Xyml_element module, and has an array at the first place in its hash values.
+# All methods except '.new' of Xyml::Element class are in this Xyml_element module.
+#
+# == (2) Xyml::Elementクラス
+#
+# XYMLツリー構造データでは、エレメントは、キー・バリュー対が一つだけのハッシュに対応する。
+# そのキーが要素名を表し、そのバリューは属性と子エレメントとテキストが要素である配列となる。
+#
+# Xyml::Elementクラスは、ハッシュを継承し、このXyml_elementモジュールをインクルードし、ハッシュのバリューの先頭に配列を持つ。
+# 'new'以外のXyml::Elementクラスのメソッドは、すべて本Xyml_elementモジュール内にある。
+#
+#     # |  XML            |   XYML         |     Xyml::Element class                        |
+#     # | <a b='CCC'>     |  -a:           |      {a: [{b:'CCC'},{d:[{e:'FFF'},'text']}]}   |
+#     # |   <d e="FFF">   |    -b: CCC     |                     ----------------------     |
+#     # |    text         |    -d:         |                      Xyml::Element class       |
+#     # |   </d>          |      -e: FFF   |      ---------------------------------------   |
+#     # | </a>            |      - text    |                Xyml::Element class             |
+#
+# == (3) loaded XYML data
+#
+# If you load XYML tree data from a XYML file by using the methods in Xyml module, 
+# the extensions to this Xyml_element module have already been done.
 # 
-# == (2) 準備
+# == (3) ロードされたXYMLデータ
 #
-# YMLツリー構造データでは、エレメントは、キー・バリュー対が一つだけのハッシュに対応する。
-# そのキーが要素名を表し、そのバリューは子エレメントとテキストが要素の配列となる。
+# Xymlモジュール内のメソッドを使ってXYMLツリー構造データをファイルからロードした場合には、
+# このXyml_elemetモジュールへの拡張がすでに行われている。
 #
-# このエレメントであるハッシュに本モジュールを拡張させて後、エレメントへのインタフェースとして
-# 本モジュールのAPIを利用する。Xymlモジュール内のメソッドを使ってXYMLツリー構造データをファイルから
-# ロードした場合には、このような拡張はすでに行われている。
+# == (4) method names
 #
-# == (3) method names
+# The name of each method in this module is a seris of three short strings which stand for
+# 'operation','object' and 'condition' respectively.
 #
-# The name of each method in this module is a seris of three short strings which stands for
-# 'operation','object','condition' respectively.
-#
-# == (3) メソッド名
+# == (4) メソッド名
 #
 # 本モジュールのメソッド名は、操作(operation)/対象(object)/条件(condition)を表す文字列を
 # 順に並べたものになっている。
@@ -81,12 +96,12 @@
 #                              | t : text                |
 #                              +-------------------------+
 #
-# == (4) about usage examples
+# == (5) about usage examples
 #
-# In he usage examples for each method, it is assumed that the lines of program code shown below have
+# In the usage example for each method, it is assumed that the lines of program code shown below have
 # already done(see Xyml module).
 #
-# == (4) 使用例について
+# == (5) 使用例について
 #
 # メソッドの使用例については、次のプログラムに続けて行われているものとする(Xymlモジュール参照)。
 #
@@ -326,7 +341,7 @@ module Xyml_element
     end
   end
   
-  # add a child.
+  # add a child element.
   #
   # 子エレメントの追加。
   # ==== Args
@@ -338,7 +353,7 @@ module Xyml_element
   #
   # 追加されたエレメント(Xyml_elementモジュールを拡張出来ない場合は'nil')
   # ==== Note
-  # This method make the input extend Xyml_element module.
+  # This method make the input object extend Xyml_element module.
   #
   # このメソッドは、入力に対して、Xyml_elemenntモジュールの拡張を実施させる
   # 
@@ -348,6 +363,11 @@ module Xyml_element
   #    my_element.ac {j:[{e:'kkk'}]}
   #    my_element.gcf
   #    #-> {j:[{e:"kkk"}]}
+  #    xyml_tree
+  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},'text',{j:[e:"kkk"]}]},{h:[{e:'fff'}]}]}]  #<- element was added next to text.
+  #    my_element.st(my_elment.gt)  #<- text was unset and set again.
+  #    xyml_tree
+  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},{j:[e:"kkk"]},'text']},{h:[{e:'fff'}]}]}]  #<- text next to added element.
   def ac elm
     return nil unless elm.is_a?(Hash) and elm.values[0].is_a?(Array)
     elm.extend Xyml_element
@@ -363,6 +383,10 @@ module Xyml_element
   # _elm_ :: an element to insert(or a hash that can extend Xyml_element module).
   #
   # _elm_ :: 挿入するエレメント(もしくは、Xyml_elementモジュールを拡張しうるハッシュ)
+  # ==== Return
+  # the inserted element.
+  #
+  # 挿入されたエレメント
   # ==== Note
   # This method make the input extend Xyml_element module.
   #
@@ -373,6 +397,8 @@ module Xyml_element
   #    my_element.isp {j:[{e:'kkk'}]}
   #    my_element.gsp
   #    #-> {j:[{e:"kkk"}]}
+  #    xyml_tree
+  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'}]},{j:[{e:"kkk"}]},{d:[{e:'ggg'},'text']},{h:[{e:'fff'}]}]}]
   def isp elm
     return nil if self.gp==:_iamroot
     elm.extend Xyml_element
@@ -394,6 +420,10 @@ module Xyml_element
   # _elm_ :: an element to insert(or a hash that can extend Xyml_element module).
   #
   # _elm_ :: 挿入するエレメント(もしくは、Xyml_elementモジュールを拡張しうるハッシュ)
+  # ==== Return
+  # the inserted element.
+  #
+  # 挿入されたエレメント
   # ==== Note
   # This method make the input extend Xyml_element module.
   #
@@ -404,6 +434,8 @@ module Xyml_element
   #    my_element.iss {j:[{e:'kkk'}]}
   #    my_element.gss
   #    #-> {j:[{e:"kkk"}]}
+  #    xyml_tree
+  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},'text']},{j:[{e:"kkk"}]},{h:[{e:'fff'}]}]}]
   def iss elm
     return nil if self.gp==:_iamroot
     elm.extend Xyml_element
@@ -428,6 +460,10 @@ module Xyml_element
   #
   #    xyml_tree.root.ga(:b)
   #    #-> 'ccc'
+  # ==== Return
+  # attribute value, or nil if no attribute with the designated name.
+  #
+  # 属性値(指定された属性名の属性が無い場合は、nil)
   def ga aname
     aname=aname.intern if aname.is_a?(String)
     self.values[0].each do |child|
@@ -438,17 +474,25 @@ module Xyml_element
   
   # set value to the attribute with the designated attribute name.
   #
-  # 指定された属性名に対する属性値の取得
+  # 指定された属性名に対する属性値の設定
   # ==== Args
   # _aname_ :: attribute name(string or symbol)
   # _avalue_ :: attribute value
   #
   # _aname_ :: 属性名(文字列もしくはシンボル)
   # _avalue_ :: 属性値
+  # ==== Return
+  # element itself.
+  #
+  # エレメント自身
   #
   #    xyml_tree.root.sa(:b,'lll')
   #    xyml_tree.root.ga(:b)
   #    #-> 'lll'
+  #    my_element=xyml_tree.root.gcfna 'd','e','ggg'
+  #    #-> {d:[{e:"ggg"},'text']}
+  #    my_element.sa(:e,'lll').sa(:m,'nnn')
+  #    #-> {d:[{e:"lll"},{m:"nnn"},'text']}
   def sa aname,avalue
     aname=aname.intern if aname.is_a?(String)
     return nil if avalue.is_a?(Array) || avalue.is_a?(Hash)
@@ -457,18 +501,19 @@ module Xyml_element
         #p "#D#syml_element.rb:sa:aname=#{aname},avalue=#{avalue},child=#{child}"
         if child.values[0].is_a?(Array) then
           self.values[0].insert(index,Hash[aname,avalue])
-          return self.values[0]
+          return self
         end
         if child.keys[0]==aname && !child.values[0].is_a?(Array) then
           child[aname]=avalue
-          return child
+          return self
         end
       elsif child.is_a?(String) then
         self.values[0].insert(index,Hash[aname,avalue])
-        return self.values[0]
+        return self
       end
     end
     values[0].push Hash[aname,avalue]
+    self
   end
 
   # delete attribute.
@@ -478,6 +523,10 @@ module Xyml_element
   # _aname_ :: attribute name(string or symbol)
   #
   # _aname_ :: 属性名(文字列もしくはシンボル)
+  # ==== Return
+  # element itself, or nil if no attribute with the designated name.
+  #
+  # エレメント自身(指定された属性名の属性が無い場合は、nil)
   #
   #    xyml_tree.root.da(:b)
   #    xyml_tree.root.ga(:b)
@@ -492,7 +541,7 @@ module Xyml_element
         end
         if child.keys[0]==aname && !child.values[0].is_a?(Array) then
           self.values[0].delete_at(index)
-          return child.values[0]
+          return self
         end
       elsif child.is_a?(String) then
         return nil
@@ -542,15 +591,22 @@ module Xyml_element
   #
   # テキストの設定
   # ==== Args
-  # _text_ :: text(or object with the method 'to_s')
+  # _text_ :: text(or object with the method 'to_s'), or nil if deleting text.
   #
-  # _text_ :: テキスト(もしくは、'to_s'メソッドを持つオブジェクト)
+  # _text_ :: テキスト(もしくは、'to_s'メソッドを持つオブジェクト)、もしくはnil(テキストを消したい場合)
+  # ==== Return
+  # element itself.
+  #
+  # エレメント自身。
   #
   #    my_element=xyml_tree.root.gcfna 'd','e','ggg'
   #    #-> {d:[{e:"ggg"},'text']}
   #    my_element.st 'abc'
   #    my_element.gt
   #    #-> 'abc'
+  #    my_elemet.st nil
+  #    my_element.gt
+  #    #-> ''
   def st value
     #p "#D#xyml_element.rb:st:(1)caller=#{caller[0]}"
     value=value.to_s
@@ -561,7 +617,8 @@ module Xyml_element
       end
     end
     self[keys[0]]=tempArray
-    self.values[0].push value
+    self.values[0].push value if value
+    self
   end
 
   # add text.
@@ -571,24 +628,29 @@ module Xyml_element
   # _text_ :: text(or object with the method 'to_s')
   #
   # _text_ :: テキスト(もしくは、'to_s'メソッドを持つオブジェクト)
+  # ==== Return
+  # element itself.
+  #
+  # エレメント自身。
+  # ==== Note
+  # the added text is stored in the last position on the element's array. see 'gt.'
+  #
+  # 追加されたテキストは、エレメントの配列に末尾に格納される。gtメソッド参照。
   #
   #    my_element=xyml_tree.root.gcfna 'd','e','ggg'
   #    #-> {d:[{e:"ggg"},'text']}
   #    my_element.at 'abc'
   #    my_element.gt
   #    #-> 'textabc'
-  # ==== Note
-  # the added text is stored in the added position on the element's array. see 'gt.'
-  #
-  # 追加されたテキストは、エレメントの配列に追加された位置に格納される。gtメソッド参照。
   def at value
     value=value.to_s
     self.values[0].push value
+    self
   end
   
-  # set a parent element.
+  # set a parent element information.
   #
-  # 親エレメントの設定
+  # 親エレメント情報の設定
   # ==== Args.
   # _parent_ :: parent element
   #
@@ -605,11 +667,12 @@ module Xyml_element
     else
       self[:_parent]=parent
     end
+    self
   end
 
-  # delete a parent element.
+  # delete the parent element information.
   #
-  # 親エレメントの削除
+  # 親エレメントj情報の削除
   # ==== Note
   # this method is for the Xyml and Xyml_element package development use, not for users.
   #
@@ -644,8 +707,8 @@ module Xyml_element
   # ==== Return
   # the root element, or nil if no root element.
   #
-  # エレメント（もしくは、ルートエレメントが無い場合、"nil"）
-  #    new_element=Xyml::element_new(:j)
+  # ルートエレメント（もしくは、ルートエレメントが無い場合、"nil"）
+  #    new_element=Xyml::Element.new(:j)
   #    xyml_tree.root.gcfna('d','e','ggg').ac new_element
   #    new_element.gr
   #    #-> {a:[...]}
@@ -675,6 +738,10 @@ module Xyml_element
   # delete the self element from the child element array of its parent element.
   #
   # 自身のエレメントを、親エレメントの子エレメント配列から、削除する。
+  # ==== Return
+  # the deleted element, or nil if no parent element.
+  #
+  # 削除されたエレメント（もしくは、親エレメントが無い場合、"nil"）
   #
   #    xyml_tree.root.gcfna('d','e','ggg').dsl
   #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'}]},{h:[{e:'fff'}]}]}]

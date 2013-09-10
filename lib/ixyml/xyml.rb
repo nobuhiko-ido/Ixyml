@@ -3,7 +3,6 @@ require 'yaml'
 require 'json'
 require 'pp'
 require_relative 'xyml_element'
-#
 # In this manual, "XYML" is explained first. After that, "XYML module" is explained.
 #
 # このマニュアルでは、最初にXYMLについて説明し、その後にXYMLモジュールについて説明する。 
@@ -11,9 +10,9 @@ require_relative 'xyml_element'
 # == (1)XYML file format
 # I propose an alternative text file format ”XYML(Xml in YaML format)” for writing XML subset data, 
 # suitable for input by non-engineers. Although some file formats have been proposed for the same purpose, 
-# XYML can be distinguished from them by its sigunificant feature that a XYML format file can be read and 
+# XYML can be distinguished from them by its significant feature that a XYML format file can be read and 
 # written as a YAML file. Inheriting both the simple tree data structure of XML and the readability of YAML,
-# a text in XYML format is easy to understand because it looks like book contents. 
+# a text in the XYML format is easy to understand because it looks like book contents. 
 #
 # == (1)Xymlファイル形式
 #
@@ -79,7 +78,7 @@ require_relative 'xyml_element'
 # where the key stands for the attribute name and the value is a scalar of attribute
 # value. 
 # A hash of an attribute can be distinguished from a hash of an element by the fact
-# its value is not an array. Note the key must be a symbol.
+# that its value is not an array. Note the key must be a symbol.
 # 
 # === (3.2)属性
 #
@@ -118,12 +117,12 @@ require_relative 'xyml_element'
 #
 # ==(4) XYML module
 # Xyml module has the following functions:
-# * loads a XYML file as an instance of Xyml::Document, saves an instance of Xyml::Document as a XYML file.
-# * loads an XML subset file as an instance of Xyml::Document, saves an instance of Xyml::Document as an XML file. 
-# * saves an instance of Xyml::Document as a JSON file.(loads a JSON file as XYML file, because JSON is included in YAML as flow style.)
+# * loads a XYML file to an instance of Xyml::Document, saves an instance of Xyml::Document to a XYML file.
+# * loads an XML subset file to an instance of Xyml::Document, saves an instance of Xyml::Document to an XML file. 
+# * saves an instance of Xyml::Document to a JSON file.(You can load a JSON file as XYML file, because JSON is included in YAML as its flow style.)
 # * converts an instance of Xyml::Document to an instance of REXML::Document and vice versa. Note an instance of REXML::Document in this case supports a subset of XML specifications, not full set. 
-# Instance methods of Xyml::Document deal with only accesses to instance variables. Concrete procecures are written in module methods.
-# In the figure below, module method names are enclosed in square brackets("[]"). 
+# Instance methods of Xyml::Document class deal with only accesses to instance variables. Concrete procedures are written in Xyml module methods.
+# In the figure below, Xyml module method names are enclosed in square brackets("[]"). 
 #
 # ==(4) XYMLモジュール
 # 提案するファイル形式XYMLについて、Xymlモジュールは次の機能を持つ。
@@ -131,7 +130,7 @@ require_relative 'xyml_element'
 # * Xyml::Documentクラスのインスタンスとして、XMLサブセットのファイルをロード／出力する。
 # * Xyml::Documentクラスのインスタンスとして、JSONファイルを出力する(JSONはYAMLのフロースタイルなので、入力はXYMLファイルとして行える)。
 # * Xyml::DocumentクラスのインスタンスとREXML::Documentのインスタンスとの相互変換を行う(但し、REXML::Documentは仕様のフルセットでなく、サブセットに対応)。
-# Xyml::Documentクラスのメソッドは、インスタンス変数に関わる処理のみを行い、具体的な処理はモジュールメソッドに記述している。
+# Xyml::Documentクラスのメソッドは、インスタンス変数に関わる処理のみを行い、具体的な処理はXymlモジュールメソッドに記述している。
 # 下図中、モジュールメソッド名は"[]"(角型括弧)で囲んで表示している。
 #
 #  +-------------------------+  load_XYML     +------------------+
@@ -139,22 +138,22 @@ require_relative 'xyml_element'
 #  |                         |<---------------|                  |
 #  |  Xyml::Document         |  out_XYML      |    XYML file     |
 #  |  instance               | [doc2file]     |(YAML subset file)|
-#  |  instance               |--------------->|                  |
+#  |                         |--------------->|                  |
 #  |  +-------------+        |                +------------------+ 
 #  |  |  Raw Object |        |
-#  |  +-------------+        |  out_JSON  +------------------+ 
-#  |                         |----------->| JSON subset file |
-#  +-------------------------+            +------------------+
+#  |  +-------------+        |  out_JSON      +------------------+ 
+#  |                         |--------------->| JSON subset file |
+#  +-------------------------+                +------------------+
 #    |                 |  ^
 #    |  to_domobj      |  |
 #    V [rawobj2domobj] |  |[domboj2element]
 #  +-------------------|--|--+
-#  |                   |  |  |  load_XML +------------------+
-#  |                   |  +---<----------|                  |
-#  |  REXML::Document  |     |  out_XML  | XML subset file  |
-#  |  instance         +---------------->|                  |
-#  |                         |           +------------------+ 
-#  +-------------------------+
+#  |                   |  |  |  load_XML      +------------------+
+#  |                   |  +---<---------------|                  |
+#  |  REXML::Document  |     |  out_XML       | XML subset file  |
+#  |  instance         +--------------------->|                  |
+#  |                         |                +------------------+ 
+#  +-------------------------+ 
 #
 #
 # see also "Xyml_element module."
@@ -163,67 +162,55 @@ require_relative 'xyml_element'
 #
 module Xyml
   
-  
-  # create a new XYML element
-  #
-  # XYMLエレメントを生成する
-  # ==== Args
-  # _name_ :: name of a new element.
-  # ==== Return
-  # a new element.
-  def self.element_new name
-    name=name.intern unless name.is_a?(Symbol)
-    element=Hash[name,Array.new]
-    element.extend Xyml_element
-    element
-  end
-
-  # convert a tree composed of alternate hashs and arrayes into a XYML element tree.
+  # convert a tree composed of alternate hashes and arrays into a XYML element tree.
   #
   # ハッシュと配列とを交互に組み合わせたツリーを、XYMLエレメントのツリーに変換する。
   # ==== Args
-  # _rawobj :: the root of a tree composed of alternate hashs and arrayes
+  # _rawobj_ :: the root of a tree composed of alternate hashes and arrays
   # ==== Return
   # the root element of a created XYML element tree.
   def self.rawobj2element rawobj
-    temp_root=Xyml.element_new(:tempRoot)
+    temp_root=Xyml::Element.new :tempRoot
     Xyml.rawobj2element_rcsv rawobj,temp_root
     temp_root[:tempRoot][0]._sp(:_iamroot)
     temp_root[:tempRoot][0]
   end
 
-  # convert a tree composed of alternate hashs and arrayes into XML strings.
+  # convert a tree composed of alternate hashes and arrays into XML strings.
   # note that a XYML element tree is such a tree to be converted by this method.
   #
   # ハッシュと配列とを交互に組み合わせたツリーを、XMLの文字列に変換する。
   # XYMLエレメントのツリーも、このメソッドにより変換されるツリーとなっていることに注意。
   # ==== Args
-  # _rawobj :: the root of a tree composed of alternate hashs and arrayes.
+  # _rawobj_ :: the root of a tree composed of alternate hashes and arrays.
   # ==== Return
-  # XML strings.
+  # strings in XML.
   def self.rawobj2xmlString rawobj
     sio=StringIO.new
-    dom = REXML::Document.new 
-    Xyml.rawobj2domobj(rawobj,dom).write(sio)
+    Xyml.rawobj2domobj(rawobj).write(sio)
     sio.rewind
     sio.read
   end
   
-  # convert a tree composed of alternate hashs and arrayes into a DOM object tree.
-  # note that a XYML element tree is such a tree to be converted by this method.
+  # convert a tree composed of alternate hashes and arrays into a DOM object tree.
+  # note that a XYML element tree is such a tree that can be converted by this method.
   #
   # ハッシュと配列とを交互に組み合わせたツリーを、DOMオブジェクトのツリーに変換する。
   # XYMLエレメントのツリーも、このメソッドにより変換されるツリーとなっていることに注意。
   # ==== Args
-  # _rawobj :: the root of a tree composed of alternate hashs and arrayes.
+  # _rawobj_ :: the root of a tree composed of alternate hashes and arrays.
+  #
   # ==== Return
   # an instance of REXML::Document.
-  def self.rawobj2domobj obj,dom
-    Xyml.rawobj2domobj_rcsv obj,dom
+  def self.rawobj2domobj rawobj
+    dom = REXML::Document.new <<EOS
+<?xml version='1.0' encoding='UTF-8'?>
+EOS
+    Xyml.rawobj2domobj_rcsv rawobj,dom
   end
 
-  # extend each hash in a tree composed of alternate hashes and arrays to a XYML element, and  
-  # obtain a XYML tree. This method is similar to _rawobj2element_ method except that _extend_element_
+  # extend each hash in a tree composed of alternate hashes and arrays to a XYML element, and
+  # obtain a XYML element tree. This method is similar to _rawobj2element_ method except that _extend_element_
   # does not create new hashes and arrays. In order to apply this method to a tree, 
   # all hashes in that tree must use symbols as hash keys.
   #
@@ -232,7 +219,7 @@ module Xyml
   # 生成しない点が異なっている。このメソッドを適用するツリーでは、ハッシュのキーはすべてシンボルで
   # なければならない。
   # ==== Args
-  # _rawobj :: the root of a tree composed of alternate hashs and arrayes
+  # _rawobj_ :: the root of a tree composed of alternate hashes and arrays
   # ==== Return
   # the root element of a created XYML element tree, which is identical to _rawobj_ in the input argument.
   def self.extend_element rawobj
@@ -254,9 +241,9 @@ module Xyml
     Xyml.domobj2element_rcsv domobj,temproot,nil
   end
   
-  # print out a XYML file.
+  # print out a XYML element tree to a XYML file.
   #
-  # DOMオブジェクトのツリーをXYMLエレメントのツリーに変換する。
+  # XYMLエレメントのツリーをXYMLファイルとしてプリントアウトする。
   # ==== Args
   # _doc_ :: an instance of Xyml::Document.
   # _io_ :: output IO.
@@ -266,31 +253,51 @@ module Xyml
 
   end
   
-  # YAMLファイルとしてのインデント。スペース２個。
+  # Indent used in a YAML file. Two spaces.
   #
-  # Indent as YAML file. Two spaces.
+  # YAMLファイルとしてのインデント。スペース２個。
   Indent='  '
   
-  # '- ' : YAMLファイルのシーケンス(配列)要素を表す文字列
+  # '- ' : String for sequence(Array) entry in a YAML file.
   #
-  # '- ' : String for sequence(Array) entry.
+  # '- ' : YAMLファイルのシーケンス(配列)要素を表す文字列
   SequenceEntry='- '
   
-  # ': ' : YAMLファイルのマッピング(ハッシュ)の値を表す文字列
+  # ': ' : String for mapping(hash) value in a YAML file.
   #
-  # ': ' : String for mapping(hash) value.
+  # ': ' : YAMLファイルのマッピング(ハッシュ)の値を表す文字列
   MappingValue=': '
   
-  # '| ' : YAMLファイルのリテラルブロックを表す文字列
+  # '| ' : String for literal block in a YAML file.
   #
-  # '| ' : String for literal block.
+  # '| ' : YAMLファイルのリテラルブロックを表す文字列
   LiteralBlock='| '
-  
+
+  # Xyml::Element class implement the element object in XYML tree data. See Xyml_element module 
+  # for more detaled specifications.
+  #
+  # Xyml::Elementクラスは、XYMLツリーデータ中のエレメントを実装するクラスである。
+  # 詳細については、Xyml_elementモジュール参照。
+  class Element < Hash
+    include Xyml_element
+    # create an instance of Xyml::Element class.
+    #
+    # Xyml::Elementクラスのインスタンスを生成する。
+    # ==== Args
+    # _name_ :: Element name.
+    #
+    # _name_ :: エレメント名
+    def initialize name
+      name=name.intern unless name.is_a?(Symbol)
+      self[name]=Array.new
+      self
+    end
+  end
   
   # Xyml::Document class implements the online data loaded from a XYML file.
   # Because XYML is a subset of XML from the viewpoint of data structure, the data in this class
   # is a tree composed of elements, attributes and texts. I call this tree "XYML element tree."
-  # The tree data in this class is composed of alternate hashes and arrays, in the sayme way of 
+  # The tree data in this class is composed of alternate hashes and arrays, in the same way of 
   # XYML files. See "Xyml module" for the mapping between XYML and XML.
   #
   # Xyml::Documentクラスは、XYMLファイルを読みだしたオンライン上のデータを実装するクラスである。
@@ -319,8 +326,8 @@ module Xyml
   #  +-------------------------+
   class Document < Array
 
-    # the root of the XYML element tree. This root element is a hash extended by "xyml_element module," 
-    # as all other XYML elements in the tree are such hashes. The idential element to "@root" is stored
+    # the root of the XYML element tree. This root element is a hash extended by "Xyml_element module," 
+    # as all other XYML elements in the tree are also such hashes. The idential element to "@root" is stored
     # in the begining of the array that this class inherites. Threrefore "@root" and "self.at(0)" stand
     # for the same object. @root is provided for accessibility.
     #
@@ -334,9 +341,9 @@ module Xyml
     #
     # Xyml::Documentのインスタンスを生成する。
     # ==== Args
-    # if _first argument in argv_ is designated:
+    # if first argument in *_argv_ is designated:
     #
-    # _argvの第一要素_が指定されている場合:
+    # *_argv_の第一要素が指定されている場合:
     # - case of a symbol
     # - シンボルの場合
     #   - create an instance composed of only a root element such that the name of the root elemnemt is the first argument
@@ -347,8 +354,8 @@ module Xyml
     #
     # - case of an IO instance
     # - IOインスタンスの場合
-    #   - create an instance corresponding to the XYML file loaded through the IO. note that only XYML file can be loaded, not XML. 
-    #   - IOを通してロードしたXYMLファイルに対応したインスタンスを生成する。XYMLファイルのみが指定可能であり、XMLは不可であることに注意。
+    #   - create an instance corresponding to the XYML file loaded through the IO. note that only XYML file can be loaded, not XML.(use load_XML method to load an XML file.) 
+    #   - IOを通してロードしたXYMLファイルに対応したインスタンスを生成する。XYMLファイルのみが指定可能であり、XMLは不可であることに注意。(XMLファイルをロードする場合は、load_XMLメソッドを使用)
     #      # aaa.xyml
     #      #  - a:
     #      #    -b: ccc
@@ -372,7 +379,7 @@ module Xyml
     def initialize *argv
       if argv.size==1
         if argv[0].is_a?(Symbol)
-          @root=Xyml.element_new argv[0]
+          @root=Xyml::Element.new argv[0]
           self.push @root
           @root._sp(:_iamroot)
         elsif argv[0].is_a?(IO)
@@ -412,7 +419,7 @@ module Xyml
     #
     # 自身のツリーデータを、指定されたIOを通して、XMLファイルに保存する。
     # ==== Args
-    # _indent(if not nil)_ :: a saved XML file is formatted with the designaged indent.
+    # _indent_(if not nil) :: a saved XML file is formatted with the designaged indent.
     #      xyml_tree=Xyml::Document.new({a: [{b: "ccc"},{d: ["eee"]}]})
     #      #-> [{a: [{b: "ccc"},{d: ["eee"]}]}]
     #      xyml_tree.out_XML(File.open("aaa.xml","w"))
@@ -423,14 +430,10 @@ module Xyml
     def out_XML io,indent=nil
 
       if indent
-        dom = REXML::Document.new 
-        dom  << REXML::XMLDecl.new('1.0', 'UTF-8')
-        Xyml.rawobj2domobj(@root,dom).write(io,indent.to_i)
+        Xyml.rawobj2domobj(@root).write(io,indent.to_i)
       else
         sio=StringIO.new
-        dom = REXML::Document.new 
-        Xyml.rawobj2domobj(@root,dom).write(sio)
-        io.print("<?xml version='1.0' encoding='UTF-8'?>\n")
+        Xyml.rawobj2domobj(@root).write(sio)
         sio.rewind
         io.print sio.read,"\n"
       end
@@ -438,23 +441,24 @@ module Xyml
     end
       
     
-    # save an XYML file corresponding to the tree data in the self through the designated IO.
+    # save a XYML file corresponding to the tree data in the self through the designated IO.
     #
     # 自身のツリーデータを、指定されたIOを通して、XYMLファイルに保存する。
-    #      xyml_tree=Xyml::Document.new({a: [{b: "ccc"},{d: ["eee"]}]})
-    #      #-> [{a: [{b: "ccc"},{d: ["eee"]}]}]
+    #      xyml_tree=Xyml::Document.new({a: [{b: "ccc"},{d: ["eee","fff"]}]})
+    #      #-> [{a: [{b: "ccc"},{d: ["eee","fff"]}]}]
     #      xyml_tree.out_XYML(File.open("aaa.xyml","w"))
     #      #-> aaa.xyml
     #      #  - a:
     #      #    -b: ccc
     #      #    -d:
-    #      #      - eee 
+    #      #      - eee
+    #      #      - fff
     def out_XYML io
       Xyml.doc2file(self,io)
       io.close
     end
 
-    # save an XYML file corresponding to the tree data in the self through the designated IO, 
+    # save a XYML file corresponding to the tree data in the self through the designated IO, 
     # in the way that a saved XYML file is in the "standard syle." 
     # For example, a XYML file has no redandant partitions in texts in the "standard style."
     # Two XYML files can be compared presicely if they are in the standard style.
@@ -462,14 +466,14 @@ module Xyml
     # 自身のツリーデータを、指定されたIOを通して、"標準スタイル"で、XYMLファイルに保存する。
     # 例えば、"標準スタイル"ではXYMLファイル内で冗長なテキストの分かち書きを行わない。
     # 標準スタイルであれば、２つのファイルを正確に比較することが可能となる。
-    #      xyml_tree=Xyml::Document.new({a: [{b: "ccc"},{d: ["eee"]}]})
-    #      #-> [{a: [{b: "ccc"},{d: ["eee"]}]}]
+    #      xyml_tree=Xyml::Document.new({a: [{b: "ccc"},{d: ["eee","fff"]}]})
+    #      #-> [{a: [{b: "ccc"},{d: ["eee","fff"]}]}]
     #      xyml_tree.out_XYML(File.open("aaa.xyml","w"))
     #      #-> aaa.xyml
     #      #  - a:
     #      #    -b: ccc
     #      #    -d:
-    #      #      - eee 
+    #      #      - eeefff
     def out_XYML_standard io
       io.print "---\n"
       Xyml.out_xyml_rcsv_std(self,0,io)
@@ -496,7 +500,7 @@ module Xyml
     end
   
     # save a JSON file corresponding to the tree data in the self through the designated IO.
-    # Note that a JSON file can be loaded by _load_XYML_ method because JSON is a part of YAML.
+    # Note that a JSON file can be loaded by load_XYML method because JSON is a part of YAML.
     #
     # 自身のツリーデータを、指定されたIOを通して、JSONファイルに保存する。JSONファイルのロードは、
     # _load_XYML_メソッドで実施できることに注意（JSONはYAML仕様の一部分となっているため）。
@@ -519,9 +523,7 @@ module Xyml
     #      xyml_tree=Xyml::Document.new({a: [{b: "ccc"},{d: ["eee"]}]})
     #      REXML::Document rexml_tree=xyml_tree.to_domobj
     def to_domobj
-      dom = REXML::Document.new 
-      dom  << REXML::XMLDecl.new('1.0', 'UTF-8')
-      Xyml.rawobj2domobj(@root,dom)
+      Xyml.rawobj2domobj(@root)
     end
 
   end # end of Xyml::Document
@@ -586,7 +588,7 @@ module Xyml
       key=raw_obj.keys[0]
       value=raw_obj[key]
       if value.is_a?(Array)
-        elm=Xyml.element_new("#{key}")
+        elm=Xyml::Element.new("#{key}")
         node.ac elm
         if value.length==0
           return
