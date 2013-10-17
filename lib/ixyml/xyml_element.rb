@@ -90,6 +90,8 @@
 #           | d : delete    |  | sp: previous sibling    |  +---------------------------------+
 #           | s : set       |  | ss: immediately         |
 #           +---------------+  |     succeeding sibling  |
+#                              | d : descendants         |
+#                              | df: first descendant    |
 #                              | p : parent              |
 #                              | r : root                |
 #                              | a : attribute           |
@@ -110,13 +112,15 @@
 #    #   - b: ccc
 #    #   - d:
 #    #     - e: fff
+#    #     - h:
+#    #       -e: ggg
 #    #   - d:
 #    #     - e: ggg
 #    #     - text
 #    #   - h:
 #    #     - e: fff
 #    xyml_tree=Xyml::Document.new(File.open("aaa.xyml"))
-#    #-> [{a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},'text']},{h:[{e:'fff'}]}]}]
+#    #-> [{a:[{b:'ccc'},{d:[{e:'fff'},{h:[{e:'ggg'}]}]},{d:[{e:'ggg'},'text']},{h:[{e:'fff'}]}]}]
 #    
 module Xyml_element
 
@@ -137,7 +141,7 @@ module Xyml_element
   # エレメントの配列
   #
   #    xyml_tree.root.gc
-  #    #-> [{d:[{e:"fff"}]},{d:[{e:"ggg"}]},{h:[{e:'fff'}]}]
+  #    #-> [{d:[{e:"fff"},{h:[{e:'ggg'}]}},{d:[{e:"ggg"}]},{h:[{e:'fff'}]}]
   def gc
     array=Array.new
     self.values[0].each do |child|
@@ -155,7 +159,7 @@ module Xyml_element
   # エレメント（子エレメントが無い場合は'nil'）
   #
   #    xyml_tree.root.gcf
-  #    #-> {d:[{e:'fff'}]}
+  #    #-> {d:[{e:'fff'},{h:[{e:'ggg'}]}]}
   def gcf
     self.values[0].each do |child|
       return child if child.is_a?(Hash) && child.values[0].is_a?(Array)
@@ -176,7 +180,7 @@ module Xyml_element
   # エレメントの配列
   #
   #    xyml_tree.root.gcn 'd'    #  or xyml_tree.root.gcn :d 
-  #    #-> [{d:[{e:"fff"}]},{d:[{e:"ggg"},'text']}]
+  #    #-> [{d:[{e:"fff"},{h:[{e:'ggg'}]}]},{d:[{e:"ggg"},'text']}]
   def gcn ename
     ename=ename.intern if ename.is_a?(String)
     array=Array.new
@@ -185,6 +189,28 @@ module Xyml_element
     end
     array
   end
+
+  # get descendant elements with the designated name.
+  #
+  # 指定された名前を持つ子孫エレメントの取得
+  # ==== Args
+  # _ename_ :: element name(string or symbol).
+  #
+  # _ename_ :: エレメント名(文字列もしくはシンボル)
+  # ==== Return
+  # an array of elements.
+  #
+  # エレメントの配列
+  #
+  #    xyml_tree.root.gdn 'h'    #  or xyml_tree.root.gdn :h
+  #    #-> [{h:[{e:"ggg"}]},{h:[{e:"fff"},'text']}]
+  def gdn ename
+    ename=ename.intern if ename.is_a?(String)
+    array=Array.new
+    gdn_rcsv self,array,ename
+    array
+  end
+  
 
   # get the first child element with the designated name.
   #
@@ -202,6 +228,21 @@ module Xyml_element
       return child if child.is_a?(Hash) && child.keys[0]==ename && child.values[0].is_a?(Array)
     end
     nil
+  end
+
+  # get the first(depth-first search) descendant element with the designated name.
+  #
+  # 指定された名前を持つ(深さ優先探索での)最初の子孫エレメントの取得
+  # ==== Return
+  # an element, or nil if no descendant element with the designated name.
+  #
+  # エレメント（指定された名前の子孫エレメントが無い場合は'nil'）
+  #
+  #    xyml_tree.root.gdfn 'h'    #  or xyml_tree.root.gcfn :h
+  #    #-> {h:[{e:"ggg"}]}
+  def gdfn ename
+    ename=ename.intern if ename.is_a?(String)
+    return gdfn_rcsv self,ename
   end
 
   # get child elements with the designated element name and atrribute.
@@ -232,6 +273,32 @@ module Xyml_element
     array
   end
  
+  # get descendant elements with the designated element name and atrribute.
+  #
+  # 指定された名前と属性を持つ子孫エレメントの取得
+  # ==== Args
+  # _ename_ :: element name(string or symbol)
+  # _aname_ :: attribute name(string or symbol)
+  # _avalue_ :: attribute value
+  #
+  # _ename_ :: エレメント名(文字列もしくはシンボル)
+  # _aname_ :: 属性名(文字列もしくはシンボル)
+  # _avalue_ :: 属性値
+  # ==== Return
+  # an array of elements.
+  #
+  # エレメントの配列
+  #
+  #    xyml_tree.root.gcna 'h','e','ggg'
+  #    #-> [{h:[{e:"ggg"}]}]
+  def gdna ename,aname,avalue
+    ename=ename.intern if ename.is_a?(String)
+    aname=aname.intern if aname.is_a?(String)
+    array=Array.new
+    gdna_rcsv self,array,ename,aname,avalue
+    array
+  end
+
   # get child elements with the designated atrribute.
   #
   # 指定された属性を持つ子エレメントの取得
@@ -257,6 +324,28 @@ module Xyml_element
     array
   end
 
+  # get descendant elements with the designated atrribute.
+  #
+  # 指定された属性を持つ子孫エレメントの取得
+  # ==== Args
+  # _aname_ :: attribute name(string or symbol)
+  # _avalue_ :: attribute value
+  #
+  # _aname_ :: 属性名(文字列もしくはシンボル)
+  # _avalue_ :: 属性値
+  # ==== Return
+  # an array of elements.
+  #
+  # エレメントの配列
+  #
+  #    xyml_tree.root.gca 'e','ggg'
+  #    #-> [{h:[{e:"ggg"}]},{d:[{e:"ggg"}]}]
+  def gda aname,avalue
+    aname=aname.intern if aname.is_a?(String)
+    array=Array.new
+    gda_rcsv self,array,aname,avalue
+    array
+  end
 
   # get the first child elements with the designated element name and atrribute.
   #
@@ -285,6 +374,30 @@ module Xyml_element
     nil
   end
 
+  # get the first(depth-first search) descendant elements with the designated element name and atrribute.
+  #
+  # 指定された名前と属性を持つ最初の子孫エレメントの取得
+  # ==== Args
+  # _ename_ :: element name(string or symbol)
+  # _aname_ :: attribute name(string or symbol)
+  # _avalue_ :: attribute value
+  #
+  # _ename_ :: エレメント名(文字列もしくはシンボル)
+  # _aname_ :: 属性名(文字列もしくはシンボル)
+  # _avalue_ :: 属性値
+  # ==== Return
+  # an element, or nil if no descendant with the designated name and attribute.
+  #
+  # エレメント（指定された名前と属性の子孫エレメントが無い場合は'nil'）
+  #
+  #    xyml_tree.root.gcfna 'h','e','ggg'
+  #    #-> {h:[{e:"ggg"}]}
+  def gdfna ename,aname,avalue
+    ename=ename.intern if ename.is_a?(String)
+    aname=aname.intern if aname.is_a?(String)
+    return gdfna_rcsv self,ename,aname,avalue
+  end
+
   # get the previous sibling element.
   #
   # 直前のシブリング(兄弟姉妹)エレメントの取得。
@@ -296,7 +409,7 @@ module Xyml_element
   #    my_element=xyml_tree.root.gcfna 'd','e','ggg'
   #    #-> {d:[{e:"ggg"},'text']}
   #    my_element.gsp
-  #    #-> {d:[{e:"fff"}]}
+  #    #-> {d:[{e:"fff"},{h:[{e:'ggg'}]}]}
   def gsp
     if parent=self.gp then
       siblings=parent.gc
@@ -364,10 +477,10 @@ module Xyml_element
   #    my_element.gcf
   #    #-> {j:[{e:"kkk"}]}
   #    xyml_tree
-  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},'text',{j:[e:"kkk"]}]},{h:[{e:'fff'}]}]}]  #<- element was added next to text.
+  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'},{h:[{e:'ggg'}]}]},{d:[{e:'ggg'},'text',{j:[e:"kkk"]}]},{h:[{e:'fff'}]}]}]  #<- element was added next to text.
   #    my_element.st(my_elment.gt)  #<- text was unset and set again.
   #    xyml_tree
-  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},{j:[e:"kkk"]},'text']},{h:[{e:'fff'}]}]}]  #<- text next to added element.
+  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'},{h:[{e:'ggg'}]}]},{d:[{e:'ggg'},{j:[e:"kkk"]},'text']},{h:[{e:'fff'}]}]}]  #<- text next to added element.
   def ac elm
     return nil unless elm.is_a?(Hash) and elm.values[0].is_a?(Array)
     elm.extend Xyml_element
@@ -398,7 +511,7 @@ module Xyml_element
   #    my_element.gsp
   #    #-> {j:[{e:"kkk"}]}
   #    xyml_tree
-  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'}]},{j:[{e:"kkk"}]},{d:[{e:'ggg'},'text']},{h:[{e:'fff'}]}]}]
+  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'},{h:[{e:'ggg'}]}]},{j:[{e:"kkk"}]},{d:[{e:'ggg'},'text']},{h:[{e:'fff'}]}]}]
   def isp elm
     return nil if self.gp==:_iamroot
     elm.extend Xyml_element
@@ -435,7 +548,7 @@ module Xyml_element
   #    my_element.gss
   #    #-> {j:[{e:"kkk"}]}
   #    xyml_tree
-  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'}]},{d:[{e:'ggg'},'text']},{j:[{e:"kkk"}]},{h:[{e:'fff'}]}]}]
+  #    #-> [{a:[{b:'ccc'},{d:[{e:'fff'},{h:[{e:'ggg'}]}]},{d:[{e:'ggg'},'text']},{j:[{e:"kkk"}]},{h:[{e:'fff'}]}]}]
   def iss elm
     return nil if self.gp==:_iamroot
     elm.extend Xyml_element
@@ -672,7 +785,7 @@ module Xyml_element
 
   # delete the parent element information.
   #
-  # 親エレメントj情報の削除
+  # 親エレメント情報の削除
   # ==== Note
   # this method is for the Xyml and Xyml_element package development use, not for users.
   #
@@ -774,5 +887,66 @@ module Xyml_element
   end
 =end
   
+  private
+  
+  def gdn_rcsv elm,array,ename
+    elm.values[0].each do |child|
+      if child.is_a?(Hash) && child.values[0].is_a?(Array) then
+        if child.keys[0]==ename then
+          array << child
+        end
+        gdn_rcsv child,array,ename
+      end
+    end
+  end
 
+  def gdfn_rcsv elm,ename
+    elm.values[0].each do |child|
+      if child.is_a?(Hash) && child.values[0].is_a?(Array) then
+        if child.keys[0]==ename then
+          return child;
+        end
+        if temp=gdfn_rcsv(child,ename) then
+          return temp 
+        end
+      end
+    end
+    nil
+  end
+
+  def gdna_rcsv elm,array,ename,aname,avalue
+    elm.values[0].each do |child|
+      if child.is_a?(Hash) && child.values[0].is_a?(Array) then
+        if child.keys[0]==ename && child.ga(aname)==avalue then
+          array << child
+        end
+        gdna_rcsv child,array,ename,aname,avalue
+      end
+    end
+  end
+  
+  def gda_rcsv elm,array,aname,avalue
+    elm.values[0].each do |child|
+      if child.is_a?(Hash) && child.values[0].is_a?(Array) then
+        if child.ga(aname)==avalue then
+          array << child
+        end
+        gda_rcsv child,array,aname,avalue
+      end
+    end
+  end
+  
+  def gdfna_rcsv elm,ename,aname,avalue
+    elm.values[0].each do |child|
+      if child.is_a?(Hash) && child.values[0].is_a?(Array) then
+        if child.keys[0]==ename && child.ga(aname)==avalue then
+          return child 
+        end
+        if temp=gdfna_rcsv(child,ename,aname,avalue) then
+          return temp
+        end
+      end
+    end
+    nil
+  end
 end
